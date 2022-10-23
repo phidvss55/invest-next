@@ -1,0 +1,10 @@
+SSG: static site generation
+-> the html is generated at build-time and is resused for each request, can cache on CDN
+
+SSR: static site rendering
+-> the html is generated on each request, mean white with how many of requets coming, it has to handle the each equivalent time 
+
+ISR: incremental static regeneration
+
+
+Special in NEXT: Each of page could be config the re-rendering for itself, depend on the appearance of some specific function

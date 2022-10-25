@@ -20,7 +20,7 @@ const Posts = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => {
     <>
       <h1>All Posts</h1>
       <div className="grid">
-          {posts.map(post => (
+          {posts.map((post: Post) => (
             <Link key={post.id} href={'/posts/' + post.id}>
               <ul className="list-post">
                 <li>{post.name}</li>

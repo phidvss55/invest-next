@@ -18,10 +18,10 @@ export default function PostDetail({ post }: any) {
     <>
       <div className="post-detail">
         <h1>Post Detail Page</h1>
-        <h2>{post.name}</h2>
-        <div>{post.username}</div>
-        <div>{post.phone}</div>
-        <div>{post.website}</div>
+        <h2>Name: {post.name}</h2>
+        <div>Username: {post.username}</div>
+        <div>Phone: {post.phone}</div>
+        <div>Website: <a href="">{post.website}</a></div>
       </div>
       
       <Link href="/posts"><button>Go back</button></Link>
@@ -33,7 +33,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const res = await fetch('https://jsonplaceholder.typicode.com/users');
   const data = await res.json();
 
-  const paths = data.map(post => {
+  const paths = data.map((post: { id: { toString: () => any } }) => {
     return {
       params: { id: post.id.toString() }
     }
@@ -45,12 +45,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export const getStaticProps = async (context) => {
+declare type TContext = {
+  params: { id: any }
+}
+
+export const getStaticProps = async (context: TContext) => {
   const id = context.params.id;
   const res = await fetch('https://jsonplaceholder.typicode.com/users/' + id)
   const post: IPostDetailProps = await res.json();
-
-  console.log('post', post)
 
   return { 
     props: { post }

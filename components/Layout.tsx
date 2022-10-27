@@ -10,7 +10,6 @@ const Layout = ({ children }: ILayoutProps) => {
   return (
     <>
       <Nav />
-      
       <div className={styles.container}>
         <main className={styles.main}>{children}</main>
       </div>

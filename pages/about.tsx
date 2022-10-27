@@ -10,6 +10,7 @@ export default function AboutPage(props: IAboutPageProps) {
         <title>Ninja List | Meta Heading</title>
         <meta lang="en" />
       </Head>
+      
       <div>About Page</div>
     </>
   )

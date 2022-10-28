@@ -13,8 +13,6 @@ export const useRecipient = (conversationUsers: Conversation['users']) => {
 
   // get recipient avatar
   const queryGetRecipient = query(collection(db, 'users'), where('email', '==', recipientEmail))
-  
-  console.log('queryGetRecipient', queryGetRecipient)
 
   const [recipientSnapshot, __loading, __error] = useCollection(queryGetRecipient)
 

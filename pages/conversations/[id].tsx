@@ -3,18 +3,34 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React from 'react';
 import styled from 'styled-components';
+import ConversationScreen from '../../components/ConversationScreen';
 import SideBar from '../../components/SideBar';
 import { db } from '../../config/firebase';
-import { Conversation } from '../../types';
-import { generateQueryGetMessages } from '../../utils/generateQueryMessages';
+import { Conversation, IMessage } from '../../types';
+import { generateQueryGetMessages, transformMessage } from '../../utils/generateQueryMessages';
 import { getRecipientEmail } from '../../utils/getRecipientEmail';
 
 const StyledContainer = styled.div`
   display: flex;
 `;
 
+const StyledConversationContainer = styled.div`
+  flex-grow: 1;
+  overflow: scroll;
+  height: 90vh;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+`;
+
 interface Props {
   conversation: Conversation;
+  messages: IMessage[];
 }
 
 const Conversation = (props: Props) => {
@@ -26,7 +42,9 @@ const Conversation = (props: Props) => {
 
       <SideBar />
 
-      <h1>Messsage</h1>
+      <StyledConversationContainer>
+        <ConversationScreen conversation={props.conversation} messages={props.messages} />
+      </StyledConversationContainer>
     </StyledContainer>
   );
 };
@@ -41,14 +59,14 @@ export const getServerSideProps: GetServerSideProps<Props, { id: string }> = asy
   const conversationSnapshot = await getDoc(conversationRef);
 
   // get all messages between loggedin user and recipient in this conversation
-  const queryMessages = generateQueryGetMessages(conversationId);
-  const messageSnapshot = await getDocs(queryMessages);
-
-  console.log('messageSnapshot', messageSnapshot?.docs[0]?.data());
+  const queryMessages = generateQueryGetMessages(conversationId as string);
+  const messagesSnapshot = await getDocs(queryMessages);
+  const messages = messagesSnapshot.docs.map((messageDoc) => transformMessage(messageDoc));
 
   return {
     props: {
       conversation: conversationSnapshot.data() as Conversation, // object
+      messages,
     },
   };
 };

@@ -2,7 +2,7 @@ import { Avatar, Button } from "@mui/material"
 import styled from "styled-components"
 
 export const StyledContainer = styled.div`
-  height: 100vh;
+  height: 90vh;
   min-width: 300px;
   max-width: 350px;
   overflow-y: scrol;

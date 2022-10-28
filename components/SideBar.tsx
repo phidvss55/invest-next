@@ -58,7 +58,7 @@ const SideBar = () => {
       console.log('ERROR LOGGIN OUT', error);
     }
   };
-  console.log('loggedInUser', loggedInUser);
+
   // check if conversation already exists between the current loggedin user and recipient
   const queryGetConversationForCurrentUser = query(
     collection(db, 'conversations'),
@@ -75,8 +75,6 @@ const SideBar = () => {
   const isInvitingSelf = recipientEmail === loggedInUser?.email;
 
   const createConversation = async () => {
-    console.log('Create conversation clicked');
-
     if (EmailValidator.validate(recipientEmail) && !isInvitingSelf && !isConversationAlreadyExists(recipientEmail)) {
       // Add conversation user to db "conversations" collection
       // A conversation is between the currently logged user and the user entered

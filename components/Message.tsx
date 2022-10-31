@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../config/firebase';
+import { auth, db } from '../config/firebase';
 import { IMessage } from '../types';
 import styled from 'styled-components';
+import { IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { deleteDoc, doc } from 'firebase/firestore';
 
 const StyledMessage = styled.div`
   width: fit-content;
@@ -34,13 +37,35 @@ const StyledTimestamp = styled.span`
   text-align: right;
 `;
 
+const StyledIconButton = styled(IconButton)`
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  background-color: darkgray;
+  color: red;
+`;
+
 const Message = ({ message }: { message: IMessage }) => {
   const [loggedInUser, _loading, _error] = useAuthState(auth);
-
   const MessageType = loggedInUser?.email === message.user ? StyledSenderMessage : StyledReceivedMessage;
+
+  const deleteDocs = async () => {
+    console.log('message', message);
+    await deleteDoc(doc(db, 'messages', message.id));
+  };
+
+  const onDeleteMessage: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault();
+
+    deleteDocs();
+  };
 
   return (
     <MessageType>
+      <StyledIconButton onClick={onDeleteMessage}>
+        <CloseIcon />
+      </StyledIconButton>
+
       {message.text}
       <StyledTimestamp>{message.sent_at}</StyledTimestamp>
     </MessageType>

@@ -12,7 +12,6 @@ export const StyledRecipientHeader = styled.div`
   border-bottom: 1px solid whitesmoke;
 `;
 
-
 export const StyledHeaderInfo = styled.div`
 	flex-grow: 1;
 	> h3 {
@@ -61,5 +60,5 @@ export const StyledInput = styled.input`
 `
 
 export const EndOfMessagesForAutoScroll = styled.div`
-	margin-bottom: 30px;
+	margin-bottom: 30px
 `

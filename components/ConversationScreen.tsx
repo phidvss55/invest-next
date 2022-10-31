@@ -1,4 +1,4 @@
-import React, { KeyboardEventHandler, useState } from 'react';
+import React, { KeyboardEventHandler, MouseEventHandler, useState } from 'react';
 import { useRecipient } from '../hooks/useRecipient';
 import { Conversation, IMessage } from '../types';
 import {
@@ -15,18 +15,20 @@ import {
   StyledInputContainer,
   StyledMessageContainer,
   StyledRecipientHeader,
+  EndOfMessagesForAutoScroll,
 } from './styles/ConversationScreen.style';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../config/firebase';
+import { auth, db } from '../config/firebase';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import Message from './Message';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import SendIcon from '@mui/icons-material/Send';
 import MicIcon from '@mui/icons-material/Mic';
+import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 const ConversationScreen = ({ conversation, messages }: { conversation: Conversation; messages: IMessage[] }) => {
   const conversationUsers = conversation.users;
@@ -62,8 +64,8 @@ const ConversationScreen = ({ conversation, messages }: { conversation: Conversa
       {
         lastSeen: serverTimestamp(),
       },
-      { merge: true }
-    ); // just update what is changed
+      { merge: true } // just update what is changed
+    );
 
     // add new message to 'messages' collection
     await addDoc(collection(db, 'messages'), {
@@ -95,6 +97,12 @@ const ConversationScreen = ({ conversation, messages }: { conversation: Conversa
     }
   };
 
+  const sendMessageOnClick: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault();
+    if (!newMessage) return;
+    addMessageToDbAndUpdateLastSeen();
+  };
+
   return (
     <>
       <StyledRecipientHeader>
@@ -115,7 +123,11 @@ const ConversationScreen = ({ conversation, messages }: { conversation: Conversa
         </StyledHeaderIcons>
       </StyledRecipientHeader>
 
-      <StyledMessageContainer>{showMessages()}</StyledMessageContainer>
+      <StyledMessageContainer>
+        {showMessages()}
+        {/* for auto scroll to the end when a message is sent */}
+        <EndOfMessagesForAutoScroll ref={endOfMessagesRef} />
+      </StyledMessageContainer>
 
       {/* Enter new message */}
       <StyledInputContainer>
@@ -126,7 +138,7 @@ const ConversationScreen = ({ conversation, messages }: { conversation: Conversa
           onChange={(event) => setNewMessage(event.target.value)}
           onKeyDown={sendMessageOnEnter}
         />
-        <IconButton>
+        <IconButton onClick={sendMessageOnClick} disabled={!newMessage}>
           <SendIcon />
         </IconButton>
         <IconButton>
